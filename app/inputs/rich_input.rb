@@ -21,6 +21,7 @@ elsif Object.const_defined?("SimpleForm")
       scope_id = object.id
       editor_options = Rich.options(options[:config])
       input_html_options["data-rich-config"] = editor_options.to_json
+      input_html_options[:id] = "#{ object_name }#{ object.id }-#{ attribute_name }"
       super
     end
   end
