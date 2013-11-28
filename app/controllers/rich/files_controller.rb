@@ -4,63 +4,66 @@ module Rich
     before_filter :authenticate_rich_user
 
     layout "rich/application"
-    
+
     def index
       @type = params[:type]
-      
+
       if(params[:scoped] == 'true')
         if(@type == "image")
           @items = RichFile.images.order("created_at DESC").where("owner_type = ? AND owner_id = ?", params[:scope_type], params[:scope_id]).page params[:page]
         else
           @items = RichFile.files.order("created_at DESC").where("owner_type = ? AND owner_id = ?", params[:scope_type], params[:scope_id]).page params[:page]
-        end        
+        end
       else
         if(@type == "image")
           @items = RichFile.images.order("created_at DESC").page params[:page]
         else
           @items = RichFile.files.order("created_at DESC").page params[:page]
-        end        
+        end
       end
-      
+
       # stub for new file
       @rich_asset = RichFile.new
-      
+
       respond_to do |format|
         format.html
         format.js
       end
-      
+
     end
-    
+
     def show
       # show is used to retrieve single files through XHR requests after a file has been uploaded
-      
+
       if(params[:id])
         # list all files
         @file = RichFile.find(params[:id])
         render :layout => false
-      else 
+      else
         render :text => "File not found"
       end
-      
-    end
-    
-    def create
 
+    end
+
+    def create
       @file = RichFile.new(:simplified_type => params[:simplified_type])
-      
+
       if(params[:scoped] == 'true')
         @file.owner_type = params[:scope_type]
         @file.owner_id = params[:scope_id].to_i
       end
-      
+
       # use the file from Rack Raw Upload
       file_params = params[:file] || params[:qqfile]
       if(file_params)
         file_params.content_type = Mime::Type.lookup_by_extension(file_params.original_filename.split('.').last.to_sym)
         @file.rich_file = file_params
+      elsif (url = params[:direct_upload_file_url]).presence
+        @file.direct_upload_url = url
+        @file.file_content_type = params[:filetype]
+        @file.file_file_size = params[:filesize]
       end
-      
+
       if @file.save
         response = { :success => true, :rich_id => @file.id }
       else
@@ -71,13 +74,13 @@ module Rich
 
       render :json => response, :content_type => "text/html"
     end
-    
-    def destroy  
+
+    def destroy
       if(params[:id])
         rich_file = RichFile.delete(params[:id])
         @fileid = params[:id]
       end
     end
-    
+
   end
 end

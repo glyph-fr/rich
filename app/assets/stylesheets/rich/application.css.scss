@@ -4,6 +4,7 @@
  * the top of the compiled file, but it's generally better to create a new file per style scope.
  *= require_self
  *= require_tree ./mixins
+ *= require s3_direct_upload_progress_bars
 */
 
 
@@ -28,9 +29,9 @@ $fontSizeLarge: 16px;
 
 
 // Mixins
-@mixin rounded($radius: 4px) { 
-  -webkit-border-radius: $radius; 
-  -moz-border-radius: $radius; 
+@mixin rounded($radius: 4px) {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
   border-radius: $radius;
 }
 
@@ -55,7 +56,7 @@ $fontSizeLarge: 16px;
 *, html, body {
 	font-family: helvetica, arial, sans-serif;
 	-webkit-font-smoothing: antialiased;
-	
+
 	-webkit-user-select: none;
 	-khtml-user-select: none;
 	-moz-user-select: none;
@@ -72,11 +73,11 @@ header {
 	z-index: 999;
 	height: $headerHeight;
 	width: 100%;
-	
+
 	background: $subtle;
 	border-bottom: 1px solid white;
-	
-	@include box-shadow(0, 0, 4px, rgba(0,0,0,0.5))	
+
+	@include box-shadow(0, 0, 4px, rgba(0,0,0,0.5))
 }
 
 #loading {
@@ -87,7 +88,7 @@ header {
 	margin-left: 20px;
 }
 
-#insert-toggle, #view-toggle {
+#insert-toggle, #view-toggle, #direct-upload-toggle {
   float: right;
   height: $headerHeight;
   overflow: hidden;
@@ -98,7 +99,7 @@ header {
   margin: 0 $margin 0 0;
 }
 
-#insert-many, #insert-one, #view-list, #view-grid {
+#insert-many, #insert-one, #view-list, #view-grid, #toggle-direct-upload {
   display: block;
   width: 16px;
   height: $headerHeight;
@@ -122,26 +123,47 @@ header {
   background-image: image-url('rich/view-list.png');
 }
 
+#toggle-direct-upload {
+  background-image: image-url('rich/weight.png');
+}
+
+#direct-upload-form {
+  display:none;
+  padding: 67px 0 21px 20px;
+  background: #FCFCFC;
+  border-bottom: 1px solid #CCC;
+  @include box-shadow(0, 0, 4px, rgba(0,0,0,0.5))
+}
+
+#direct-upload-submit {
+  border: none;
+  border-radius: 5px;
+  padding: 7px;
+  background: #AAA;
+  color: white;
+  font-weight: bold;
+}
+
 // Default thumbnail view
 #items {
 	list-style: none;
 	margin: 0 0 0 $margin;
 	padding: 0;
 	padding-top: $headerHeight + $margin + 1;
-	
+
 	li {
 		width: $imageSize;
 		height: $imageSize + $margin;
 		margin-right: $margin;
 		float: left;
-		
+
 		* {
 				transition: opacity 85ms ease-in, box-shadow 85ms ease-in, color 85ms ease-in;
 				-moz-transition: opacity 85ms ease-in, box-shadow 85ms ease-in, color 85ms ease-in;
 				-ms-transition: opacity 85ms ease-in, box-shadow 85ms ease-in, color 85ms ease-in;
 				-webkit-transition: opacity 85ms ease-in, box-shadow 85ms ease-in, color 85ms ease-in;
 		}
-		
+
 		.placeholder {
 			height: $imageSize - 2;
 			width: $imageSize - 2;
@@ -149,17 +171,17 @@ header {
 			@include rounded;
 			line-height: $imageSize - $verticalCenterOffset;
 			text-align: center;
-						
+
 			font-size: $fontSizeLarge;
 			font-weight: bold;
 			color: $light;
 		}
-		
+
 		img {
 			@include rounded;
 			@include box-shadow(0, 0, 4px, lighten($dark, 40%));
 		}
-		
+
 		img:hover {
 			@include box-shadow(0, 0, 4px, $light);
 		}
@@ -167,11 +189,11 @@ header {
 		img:active {
 			@include box-shadow(0, 0, 4px, black);
 		}
-		
+
 		.new {
 			@include box-shadow(0, 0, 4px, rgb(58,194,207))
 		}
-		
+
 		.spinner {
 			opacity: 0.3;
 			margin-left: ($imageSize - 2)/2 - 32/2;
@@ -180,30 +202,30 @@ header {
 			height: 32px;
 			background: image-url('rich/plus.png') no-repeat top center;
 		}
-		
+
 		#upload .spinner {
 			opacity: 1;
 		}
-		
+
 		.progress .progress-bar {
 			background: $subtle;
 			height: $imageSize - 2;
 			float: left;
 		}
-		
+
 		.progress .spinning {
 		  -webkit-animation-name: spinner;
 		  -webkit-animation-duration:0.75s;
 		  -webkit-animation-iteration-count:infinite;
 		  -webkit-animation-timing-function:linear;
 		}
-		
+
 		.progress .spinner.error {
 			opacity: 1;
 			background-image: image-url('rich/plus-red.png');
 			-webkit-transform: rotate(45deg);
 		}
-		
+
 		p {
 			font-size: 10px;
 			margin: 0;
@@ -214,11 +236,11 @@ header {
 			color: $subtle;
 			width: 80px;
 		}
-		
+
 		&:hover p {
 			color: $light;
 		}
-		
+
 		.delete {
 			position: absolute;
 			text-indent: -9999px;
@@ -229,7 +251,7 @@ header {
 			background: image-url('rich/x-red.png') no-repeat right ($margin / 2 - 5);
 			opacity: 0.1;
 		}
-		
+
 		&:hover .delete {
 			opacity: 0.5;
 		}
@@ -237,14 +259,14 @@ header {
 		&:hover .delete:hover {
 			opacity: 1;
 		}
-		
+
 	}
-	
+
 	#uploadBlock:hover .placeholder .spinner {
 		background-position: 0 -32px;
 	}
-	
-}   
+
+}
 
 // Condensed list view
 #items.list {
@@ -276,7 +298,7 @@ header {
       margin-top: 28px;
     }
 
-    
+
     p {
       color: $dark;
       font-size: 14px;
@@ -307,18 +329,18 @@ header {
 }
 
 .clickable:hover {
-	cursor: pointer;	
+	cursor: pointer;
 }
 
 // scope selector
 ul.scopes {
-	
+
 	list-style: none;
 	margin: 0 15px 0 ($margin/4*3);
 	padding: 0 10px 0 0;
   background: image-url('rich/menu-dash.png') no-repeat right 23px;
 	float: right;
-	
+
 	li {
 		float: left;
 		height: $margin;
@@ -328,29 +350,29 @@ ul.scopes {
 		font-weight: bold;
 		font-size: 12px;
 	}
-	
+
 	li.label {
 		color: $light;
 		padding-right: $margin/4;
 	}
-	
+
 	li.scope {
 		color: $dark;
 		@include rounded;
 		padding: 0 $margin / 2;
 	}
-	
+
 	li.scope:hover {
 		cursor: pointer;
 		background: darken($subtle, 10%);
 		text-shadow: 0px 1px 0 white;
 	}
-	
+
 	li.scope.selected {
 		@include inset-box-shadow(0, 1px, 1px, $dark);
 		text-shadow: 0px 1px 0 rgba(0, 0, 0, 0.25);
 		color: $subtle;
 		background: $light;
 	}
-	
+
 }

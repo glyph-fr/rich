@@ -1,5 +1,5 @@
 <header>
-  
+
 	<div id="loading" style="display:none;"></div>
 
   <div id="view-toggle">
@@ -9,23 +9,52 @@
 
   <div id="insert-toggle">
     <a href="#" id="insert-many" title="<%= t(:insert_many_tip) %>"><%= t(:insert_many) %></a>
-    <a href="#" id="insert-one" title="<%= t(:insert_one_tip) %>"><%= t(:insert_one) %></a>  
+    <a href="#" id="insert-one" title="<%= t(:insert_one_tip) %>"><%= t(:insert_one) %></a>
   </div>
+
+  <% if Rich.allow_s3_direct_upload %>
+    <div id="direct-upload-toggle">
+      <a href="#" id="toggle-direct-upload" title="<%= t(:direct_upload) %>"><%= t(:direct_upload) %></a>
+    </div>
+  <% end %>
 
   <ul id="styles" class="scopes">
     <li class="label"><%= t(:available_styles) %></li>
   </ul>
-  
+
 </header>
 
-<div id="legacy-form"><%= form_for(@rich_asset, :url => files_path) do |f| %>
-  <p><%= f.file_field :rich_file%></p>
-  <%= f.submit("Upload") %>
-<% end %>
-</div>
+<!-- <div id="legacy-form"><%# form_for(@rich_asset, :url => rich.files_path) do |f| %>
+  <p><%# f.file_field :rich_file %></p>
+  <%# f.submit("Upload") %>
+<%# end %>
+</div> -->
 
-<ul id="items">
-  
+<% if Rich.allow_s3_direct_upload %>
+  <div id="direct-upload-form">
+    <%= s3_upload_form callback_url: files_path(simplified_type: params[:type]), callback_param: "direct_upload_file_url", callback_method: "POST", acl: "public-read", id: "direct-upload-field" do %>
+      <%= file_field_tag :file, multiple: true %>
+
+      <button type="button" id="direct-upload-submit">
+        <%= t(:send_direct_upload) %>
+      </button>
+    <% end %>
+
+    <script id="template-upload" type="text/x-tmpl">
+      <div id="file-{%=o.unique_id%}" class="upload">
+        {%=o.name%}
+        <div class="progress">
+          <div class="bar" style="width: 0%"></div>
+        </div>
+      </div>
+    </script>
+  </div>
+<% end %>
+
+
+
+<ul id="items" data-items-root-url="<%= files_path %>">
+
   <li id="uploadBlock">
     <div id="upload" class="qq-upload-button placeholder">
       <div class="spinner"></div>

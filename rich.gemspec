@@ -23,8 +23,9 @@ Gem::Specification.new do |s|
   s.add_dependency "sass-rails"
   s.add_dependency "mime-types"
   s.add_dependency "kaminari"
+  s.add_dependency "s3_direct_upload"
 
   #s.add_development_dependency "sqlite3"
   #s.add_development_dependency "formtastic"
-  
+
 end
