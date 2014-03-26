@@ -2,6 +2,14 @@ require "rich"
 
 if Object.const_defined?("Rich")
   Rich.setup do |config|    
+    # == Backend configuration
+    # Rich uses Paperclip (https://github.com/thoughtbot/paperclip) by default.
+    # You will need to add it to your Gemfile, however.
+    # config.backend = :paperclip
+    #
+    # Optionally, you can use CarrierWave (https://github.com/carrierwaveuploader/carrierwave).
+    # You will need to add it to your Gemfile.
+    # config.backend = :carrierwave
     
     # == CKEditor configuration
     # 
@@ -103,6 +111,13 @@ if Object.const_defined?("Rich")
     # 
     # Default (NOT recommended in production environments): 
     # config.authentication_method = :none
+
+    # == Pagination
+    #
+    # By default, file picker loads up assets in blocks of 34.
+    #
+    # Default:
+    # config.paginates_per = 34
     
   end
   

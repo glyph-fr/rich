@@ -49,6 +49,9 @@ module Rich
   mattr_accessor :file_path
   @@file_path
 
+  mattr_accessor :backend
+  @@backend = :paperclip
+
   # configuration for picker
   mattr_accessor :placeholder_image
   @@placeholder_image = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" # a transparent pixel
@@ -85,6 +88,9 @@ module Rich
   }
   # End configuration defaults
 
+  mattr_accessor :paginates_per
+  @@paginates_per = 34
+
   def self.options(overrides={}, scope_type=nil, scope_id=nil)
     # merge in editor settings configured elsewhere
 
@@ -103,7 +109,8 @@ module Rich
       :allow_embeds => self.allow_embeds,
       :placeholder_image => self.placeholder_image,
       :preview_size => self.preview_size,
-      :hidden_input => self.hidden_input
+      :hidden_input => self.hidden_input,
+      :paginates_per => self.paginates_per
     }
     editor_options = self.editor.merge(base)
 
@@ -119,11 +126,11 @@ module Rich
 
     # remove the filebrowser if allow_document_uploads is false (the default)
     unless editor_options[:allow_document_uploads]
-      editor_options[:toolbar][1].delete("richFile")
+      editor_options[:toolbar].map{|a| a.delete 'richFile'; a}
     end
 
     unless editor_options[:allow_embeds]
-      editor_options[:toolbar][1].delete("MediaEmbed")
+      editor_options[:toolbar].map{|a| a.delete 'MediaEmbed'; a}
     end
 
     # object scoping
@@ -187,6 +194,12 @@ module Rich
         require 'rich/integrations/legacy_formtastic'
         ::Formtastic::SemanticFormBuilder.send :include, Rich::Integrations::FormtasticBuilder
       end
+    end
+
+    if self.backend == :paperclip
+      require 'rich/backends/paperclip'
+    elsif self.backend == :carrierwave
+      require 'rich/backends/carrierwave'
     end
   end
 

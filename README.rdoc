@@ -6,7 +6,7 @@ Presently, Rich integrates with Active Admin, Rails Admin and vanilla Formtastic
 
 == Goals
 
-1. Keep the CKEditor source our of your project.
+1. Keep the CKEditor source out of your project.
 2. Sensible defaults. We don't want our users to insert tables, smilies or other frivolities that will do nothing but ruin a lovingly crafted design.
 3. Make it easy to customize these defaults.
 4. Implement a usable (and easily configurable) file manager that serves up images that fit your specific design.
@@ -26,6 +26,13 @@ Rich is available as a Ruby Gem, which makes installation very easy.
   gem 'rich'
   # the edge (unstable) version can be had using:
   # gem 'rich', :git => 'https://github.com/bastiaanterhorst/rich.git'
+
+  # If you want to use Paperclip
+  gem 'paperclip'
+  
+  # If you want to use CarrierWave
+  # Be sure to set config.backend = :carrierwave in config/initializers/rich.rb
+  gem 'carrierwave'
 
 After updating your bundle, run the installer.
 
@@ -76,6 +83,10 @@ Since Active Admin actually uses Formtastic, you can use it with Rich out of the
   end
 
 === Rails Admin
+
+Since 1.4.7, it is the user's responsibility to create assets/javascripts/rails_admin/custom/ui.js and include rich
+
+  //= require rich/base
 
 To use Rich in your RA forms, use the following in your initializer:
 
@@ -225,7 +236,7 @@ Also note that none of this is secure. At all. It is purely meant as a convenien
 
 === Uploading to S3
 
-Paperclip (which Rich uses to handle uploads) supports S3 out of the box. Just add the following to you environment:
+Paperclip (which Rich uses to handle uploads) supports S3 out of the box. Just add the following to your environment:
 
   Paperclip::Attachment.default_options.merge!(
     :storage => :s3,
