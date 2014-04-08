@@ -24,11 +24,12 @@
 
 </header>
 
-<!-- <div id="legacy-form"><%# form_for(@rich_asset, :url => rich.files_path) do |f| %>
-  <p><%# f.file_field :rich_file %></p>
-  <%# f.submit("Upload") %>
-<%# end %>
-</div> -->
+<div id="legacy-form">
+  <%= form_for(@rich_asset, :url => rich.files_path) do |f| %>
+    <p><%= f.file_field :rich_file %></p>
+    <%= f.submit("Upload") %>
+  <% end %>
+</div>
 
 <% if Rich.allow_s3_direct_upload %>
   <div id="direct-upload-form">
